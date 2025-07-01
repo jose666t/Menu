@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comideria y Refresqueria Sandra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #D36135; --secondary-color: #3D405B; --background-color: #F4F1EA;
+            --text-color: #333; --white-color: #FFFFFF;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Roboto', sans-serif; margin: 0; padding: 0 0 80px 0;
+            background-color: var(--background-color); color: var(--text-color);
+        }
+        .mobile-navbar {
+            background-color: var(--secondary-color); position: fixed; bottom: 0; left: 0;
+            width: 100%; z-index: 1000; box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+            display: flex; justify-content: space-around;
+        }
+        .nav-link {
+            flex-grow: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; color: var(--background-color); text-decoration: none;
+            font-size: 0.8em; padding: 10px 5px; transition: background-color 0.3s, color 0.3s;
+            border-top: 3px solid transparent;
+        }
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1); color: var(--white-color);
+            border-top: 3px solid var(--primary-color);
+        }
+        .nav-icon { font-size: 1.5em; margin-bottom: 5px; }
+        .container { padding: 0 15px; }
+        header {
+            text-align: center; padding: 30px 20px; background-color: var(--secondary-color);
+            color: var(--white-color);
+        }
+        header h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5em; margin: 0;
+            color: var(--primary-color);
+        }
+        header p { font-size: 1.1em; margin: 5px 0 0; opacity: 0.9; }
+        .menu-section {
+            display: none; padding: 30px 0; animation: fadeIn 0.5s;
+        }
+        .menu-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .menu-section-title {
+            font-family: 'Playfair Display', serif; font-size: 2em; text-align: center;
+            margin-bottom: 30px; color: var(--secondary-color);
+        }
+        .menu-item {
+            background: var(--white-color); border-radius: 10px; padding: 15px;
+            margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--primary-color);
+        }
+        .menu-item-header {
+            display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;
+        }
+        .menu-item-name {
+            font-weight: bold; font-size: 1.2em; color: var(--secondary-color); flex: 1;
+        }
+        .menu-item-price {
+            font-weight: bold; font-size: 1.2em; color: var(--primary-color); margin-left: 10px;
+        }
+        .menu-item-description { font-size: 0.95em; line-height: 1.5; color: #555; }
+        footer {
+            text-align: center; padding: 30px 20px; background-color: #e0dccc;
+            color: #555; font-size: 0.9em; line-height: 1.6;
+        }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75); display: flex; justify-content: center;
+            align-items: center; z-index: 2000; visibility: hidden; opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s; backdrop-filter: blur(5px);
+        }
+        .modal-overlay.visible { visibility: visible; opacity: 1; }
+        .modal-content {
+            background: #f0f0f0; padding: 25px; border-radius: 15px;
+            width: 90%; max-width: 500px; text-align: center; position: relative;
+            max-height: 85vh; overflow-y: auto; box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+        .modal-close {
+            position: absolute; top: 10px; right: 15px; font-size: 2em; cursor: pointer; color: #999;
+        }
+        .modal-content h2 {
+            font-family: 'Playfair Display', serif; color: var(--secondary-color); font-size: 2em; margin-bottom: 25px;
+        }
+        .admin-form .form-group {
+            background: var(--white-color); padding: 15px; border-radius: 8px;
+            margin-bottom: 20px; text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .admin-form label {
+            display: block; font-weight: 700; font-size: 1.1em; margin-bottom: 5px; color: var(--secondary-color);
+        }
+        .admin-form .instructions { font-size: 0.85em; color: #777; margin-top: 0; margin-bottom: 10px; }
+        .admin-form textarea {
+            width: calc(100% - 20px); padding: 10px; border: 1px solid #ccc; border-radius: 5px;
+            font-size: 0.9em; min-height: 120px; font-family: 'Courier New', Courier, monospace;
+        }
+        .admin-form textarea:focus {
+            border-color: var(--primary-color); outline: none; box-shadow: 0 0 5px rgba(211, 97, 53, 0.5);
+        }
+        .admin-form button {
+            background-color: var(--primary-color); color: white; padding: 15px 25px;
+            border: none; border-radius: 8px; cursor: pointer; font-size: 1.2em;
+            transition: background-color 0.3s; width: 100%; font-weight: 700;
+        }
+        #login-view, #admin-panel { display: none; }
+        .loading-message { font-size: 1.2em; text-align: center; padding: 40px; color: #888; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Comideria y Refresqueria Sandra</h1>
+        <p>🍽️ Sabor casero todos los días 💯</p>
+    </header>
+    <div class="container">
+        <main>
+            <section id="desayunos" class="menu-section active">
+                <h2 class="menu-section-title">🌅 Desayunos</h2>
+                <div id="desayunos-items" class="loading-message">Cargando menú...</div>
+            </section>
+            <section id="almuerzos" class="menu-section">
+                <h2 class="menu-section-title">☀️ Almuerzos</h2>
+                <div id="almuerzos-items" class="loading-message">Cargando menú...</div>
+            </section>
+            <section id="refrescos" class="menu-section">
+                <h2 class="menu-section-title">🍹 Refrescos</h2>
+                <div id="refrescos-items" class="loading-message">Cargando menú...</div>
+            </section>
+        </main>
+    </div>
+    <footer>
+        <p><h4>¡Gracias por su preferencia! <br>
+        
+        <h4>📍 Ubicación Mercado la estación  de los bahos costado sur, León <br> <h4>Mas información al: +505 5879 2500</h4></p>
+    </footer>
+
+    <div id="admin-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close" id="modal-close-btn">&times;</span>
+            <div id="login-view">
+                <h2>🔒 Acceso de Administrador</h2>
+                <form id="login-form">
+                    <input type="password" id="password" placeholder="🔑 Contraseña" required style="width: calc(100% - 22px); padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 1.1em;">
+                    <button type="submit">🔓 Entrar</button>
+                    <p id="login-error" style="color: red; display: none;">¡Contraseña incorrecta! 😥</p>
+                </form>
+            </div>
+            <div id="admin-panel">
+                <h2>✍️ Editar Menú del Día</h2>
+                <form id="menu-editor-form" class="admin-form">
+                    <div class="form-group"><label for="desayunos-editor">🍳 Lista de Desayunos</label><p class="instructions">Formato: <strong>Nombre;Descripción;Precio</strong> (uno por línea)</p><textarea id="desayunos-editor"></textarea></div>
+                    <div class="form-group"><label for="almuerzos-editor">☀️ Lista de Almuerzos</label><p class="instructions">Formato: <strong>Nombre;Descripción;Precio</strong> (uno por línea)</p><textarea id="almuerzos-editor"></textarea></div>
+                    <div class="form-group"><label for="refrescos-editor">🍹 Lista de Refrescos</label><p class="instructions">Formato: <strong>Nombre;Descripción;Precio</strong> (uno por línea)</p><textarea id="refrescos-editor"></textarea></div>
+                    <button type="submit">💾 Guardar en la Nube</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <nav class="mobile-navbar">
+        <a href="#" class="nav-link active" data-section="desayunos"><i class="nav-icon fa-solid fa-mug-saucer"></i> Desayunos</a>
+        <a href="#" class="nav-link" data-section="almuerzos"><i class="nav-icon fa-solid fa-utensils"></i> Almuerzos</a>
+        <a href="#" class="nav-link" data-section="refrescos"><i class="nav-icon fa-solid fa-martini-glass"></i> Refrescos</a>
+        <a href="#" id="admin-link" class="nav-link" data-section="admin"><i class="nav-icon fa-solid fa-gear"></i> Ajustes</a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // TU CONFIGURACIÓN DE FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxPzFiTt0dNZCbuO-cSRsoNp1P7NSlgRA",
+            authDomain: "menu-d827e.firebaseapp.com",
+            databaseURL: "https://menu-d827e-default-rtdb.firebaseio.com",
+            projectId: "menu-d827e",
+            storageBucket: "menu-d827e.firebasestorage.app",
+            messagingSenderId: "360999359414",
+            appId: "1:360999359414:web:0a1fc8b9a263ff62582717",
+            measurementId: "G-B9CT7L96G6"
+        };
+
+        // INICIALIZAR FIREBASE
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const menuRef = database.ref('menu');
+
+        // --- DATOS GLOBALES Y FUNCIONES ---
+        let currentMenuData = {}; // Variable para guardar los datos actuales
+
+        function renderMenu(data) {
+            const createMenuItemHTML = (item) => `<div class="menu-item"><div class="menu-item-header"><h3 class="menu-item-name">${item.name}</h3><p class="menu-item-price">${item.price}</p></div><p class="menu-item-description">${item.description}</p></div>`;
+            
+            document.getElementById('desayunos-items').innerHTML = data.desayunos ? data.desayunos.map(createMenuItemHTML).join('') : "No hay desayunos hoy.";
+            document.getElementById('almuerzos-items').innerHTML = data.almuerzos ? data.almuerzos.map(createMenuItemHTML).join('') : "No hay almuerzos hoy.";
+            document.getElementById('refrescos-items').innerHTML = data.refrescos ? data.refrescos.map(createMenuItemHTML).join('') : "No hay refrescos hoy.";
+        }
+
+        // --- ESCUCHAR CAMBIOS EN FIREBASE EN TIEMPO REAL ---
+        menuRef.on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                currentMenuData = snapshot.val();
+                renderMenu(currentMenuData);
+            } else {
+                console.log("No data available in Firebase. Creating initial data.");
+                const initialMenuData = {
+                    desayunos: [{ name: "1. Gallo Pinto con Huevo", description: "El clásico, con queso y crema.", price: "C$150" }],
+                    almuerzos: [{ name: "1. Pollo a la Plancha", description: "Con arroz, ensalada y tajadas.", price: "C$220" }],
+                    refrescos: [{ name: "Chía con Limón 🍋", description: "Refresco natural para el calor.", price: "C$40" }]
+                };
+                menuRef.set(initialMenuData); // Sube los datos iniciales si la BD está vacía
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- LÓGICA DE NAVEGACIÓN POR PESTAÑAS ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const menuSections = document.querySelectorAll('.menu-section');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const sectionId = this.dataset.section;
+                    if (sectionId === 'admin') return;
+                    e.preventDefault();
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    menuSections.forEach(section => section.classList.toggle('active', section.id === sectionId));
+                });
+            });
+
+            // --- LÓGICA DEL MODAL DE ADMIN ---
+            const adminLink = document.getElementById('admin-link');
+            const modal = document.getElementById('admin-modal');
+            const closeBtn = document.getElementById('modal-close-btn');
+            const loginView = document.getElementById('login-view');
+            const adminPanel = document.getElementById('admin-panel');
+            const loginForm = document.getElementById('login-form');
+            const passwordInput = document.getElementById('password');
+            const loginError = document.getElementById('login-error');
+            const menuEditorForm = document.getElementById('menu-editor-form');
+
+            adminLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginView.style.display = 'block';
+                adminPanel.style.display = 'none';
+                passwordInput.value = '';
+                loginError.style.display = 'none';
+                modal.classList.add('visible');
+            });
+
+            function closeModal() { modal.classList.remove('visible'); }
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (passwordInput.value === 'jose') {
+                    loginView.style.display = 'none';
+                    populateAdminPanel(currentMenuData);
+                    adminPanel.style.display = 'block';
+                } else {
+                    loginError.style.display = 'block';
+                }
+            });
+
+            function populateAdminPanel(data) {
+                const toText = (items) => items ? items.map(item => `${item.name};${item.description};${item.price}`).join('\n') : "";
+                document.getElementById('desayunos-editor').value = toText(data.desayunos);
+                document.getElementById('almuerzos-editor').value = toText(data.almuerzos);
+                document.getElementById('refrescos-editor').value = toText(data.refrescos);
+            }
+
+            menuEditorForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const parseItems = (text) => text.trim().split('\n').filter(Boolean).map(line => {
+                    const [name, description, price] = line.split(';');
+                    return { name: name?.trim(), description: description?.trim(), price: price?.trim() };
+                }).filter(item => item.name && item.description && item.price);
+
+                const newMenuData = {
+                    desayunos: parseItems(document.getElementById('desayunos-editor').value),
+                    almuerzos: parseItems(document.getElementById('almuerzos-editor').value),
+                    refrescos: parseItems(document.getElementById('refrescos-editor').value)
+                };
+
+                // GUARDAR LOS DATOS NUEVOS EN FIREBASE
+                menuRef.set(newMenuData)
+                    .then(() => {
+                        alert('¡Menú actualizado con éxito! ✅');
+                        closeModal();
+                    })
+                    .catch((error) => {
+                        alert('¡Error al guardar! 😥\n' + error.message);
+                    });
+            });
+        });
+    </script>
+</body>
+</html>
+
